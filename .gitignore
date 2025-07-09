@@ -1,0 +1,62 @@
+*.pyc
+__pycache__/
+.Python
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.pytest_cache/
+htmlcov/
+.ipynb_checkpoints
+.mypy_cache/
+.dmypy.json
+celerybeat-schedule
+
+# Django
+*.log
+*.pot
+*.mo
+db.sqlite3
+media/
+static/
+local_settings.py
+
+# JavaScript / Node.js (for React frontend)
+node_modules/
+build/
+.env
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+.parcel-cache
+.eslintcache
+.prettierignore
+coverage/
+
+# IDEs and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# VS Code specific (if applicable)
+.vscode/

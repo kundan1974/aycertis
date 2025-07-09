@@ -1,0 +1,70 @@
+Rules for Pharmaceutical SaaS Web Application Project
+These rules are designed to guide the development of the Pharmaceutical SaaS Web Application. The AI should adhere to these guidelines to ensure consistency, efficiency, and alignment with project goals.
+
+Project Overview & Core Principles:
+
+Project Goal Alignment: Always prioritize suggestions and code generation that contribute to developing a robust, scalable, and user-friendly SaaS web application for pharmaceutical operations, centralizing inventory, employee, HR, and CRM.
+
+Contextual Awareness: Refer to the "SaaS Web Application Project Description" document (project_description immersive) as the primary source of truth for project scope, modules, and technology stack.
+
+Security First: Given the pharmaceutical domain, emphasize and recommend secure coding practices, data encryption, access control, and compliance considerations (e.g., data privacy, audit trails) in all relevant suggestions.
+
+Scalability & Performance: When generating code or suggesting architectural patterns, consider scalability and performance implications suitable for a growing SaaS application.
+
+Technology Stack Adherence:
+
+Backend (Django Focus):
+
+All backend code generation and suggestions must utilize the Django Framework.
+
+Adhere to Django's best practices for models, views, serializers, and URL routing.
+
+Prioritize Django REST Framework for API development.
+
+API (RESTful Emphasis):
+
+All API interactions and definitions must follow RESTful API principles.
+
+Ensure clear endpoint design, proper HTTP methods, and appropriate status codes.
+
+Generate comprehensive API documentation (e.g., using OpenAPI/Swagger specifications) where applicable.
+
+Frontend (React & Tailwind):
+
+All frontend code generation and suggestions must use React for component-based UI development.
+
+Styling must exclusively use Tailwind CSS classes for responsive and consistent design. Avoid custom CSS unless absolutely necessary and explicitly justified.
+
+Emphasize functional components and modern React hooks.
+
+Module-Specific Guidance:
+
+Inventory Management:
+
+Focus on features like product tracking (raw materials, finished goods), stock levels, reorder points, expiry dates, batch/lot number tracking, and inventory movement reporting.
+
+Suggest database schemas optimized for inventory data.
+
+Employee Management:
+
+Cover employee data, salary, commissions, bonuses, attendance, and leave management.
+
+Ensure secure handling of sensitive employee information.
+
+Basic HR Management:
+
+Address onboarding/offboarding, document management (contracts, reviews), and basic HR reporting.
+
+Customer Relationship Management (CRM):
+
+Include customer profiles, interaction tracking, sales history, communication logs, lead/opportunity management, and sales performance reporting.
+
+Code Quality & Development Practices:
+
+Clean Code & Comments: Generate well-structured, readable code with extensive comments explaining logic, algorithms, and function headers.
+
+Error Handling: Implement robust error handling using try/catch blocks and appropriate error messages. Avoid alert() or confirm() for user interaction; use custom modal UIs instead.
+
+Testing: Encourage and suggest unit and integration testing strategies for both frontend and backend components.
+
+Responsiveness: Ensure all frontend UI components are fully responsive across various devices (mobile, tablet, desktop) using Tailwind's responsive utilities.

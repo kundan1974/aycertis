@@ -1,0 +1,86 @@
+---
+alwaysApply: true
+---
+Project Description: Pharmaceutical SaaS Web Application
+This project outlines the development of a comprehensive Software-as-a-Service (SaaS) web application tailored for a pharmaceutical company. The application aims to streamline critical business operations by integrating several key functionalities into a single, intuitive platform.
+
+1. Project Goal:
+To develop a robust, scalable, and user-friendly SaaS web application that centralizes inventory, employee, HR, and customer relationship management for a pharmaceutical company, enhancing operational efficiency and data accessibility.
+
+2. Scope of Work:
+
+The development will encompass the following core modules:
+
+Inventory Management System:
+
+Tracking of pharmaceutical products (raw materials, finished goods).
+
+Management of stock levels, reorder points, and expiry dates.
+
+Batch and lot number tracking.
+
+Reporting on inventory movement and valuation.
+
+Employee Management System:
+
+Employee data management (personal details, roles, contact information).
+
+Salary calculation and payroll processing.
+
+Commission tracking and calculation.
+
+Bonus management and distribution.
+
+Attendance and leave management.
+
+Basic HR Management:
+
+Employee onboarding and offboarding processes.
+
+Document management (contracts, performance reviews).
+
+Basic reporting on HR metrics.
+
+Customer Relationship Management (CRM):
+
+Management of customer and client profiles.
+
+Tracking of interactions, sales history, and communication logs.
+
+Lead and opportunity management.
+
+Reporting on customer engagement and sales performance.
+
+3. Technology Stack:
+
+Backend: Django Framework
+
+API: RESTful APIs
+
+Frontend: React
+
+Styling: Tailwind CSS
+
+4. Key Deliverables:
+
+Fully functional web application with all specified modules.
+
+RESTful API documentation.
+
+Database schema design.
+
+User interface (UI) and user experience (UX) design.
+
+Deployment instructions.
+
+Basic user manual.
+
+5. Future Considerations (Out of Scope for Initial Phase):
+
+Integration with external systems (e.g., accounting software, shipping carriers).
+
+Advanced reporting and analytics dashboards.
+
+Mobile application development.
+
+This project will deliver a foundational SaaS platform designed to significantly improve the operational efficiency and data management capabilities of the pharmaceutical company.
