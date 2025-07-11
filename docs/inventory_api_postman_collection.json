@@ -1,0 +1,229 @@
+{
+  "info": {
+    "_postman_id": "aycertis-inventory-api-collection",
+    "name": "Aycertis Inventory API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for Aycertis Inventory Management API."
+  },
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/products/", "host": ["{{base_url}}"], "path": ["api", "inventory", "products", ""] }
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Paracetamol\",\n  \"description\": \"Pain reliever\",\n  \"category\": \"Analgesic\",\n  \"hsn_code\": \"3004\",\n  \"unit\": \"box\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/inventory/products/", "host": ["{{base_url}}"], "path": ["api", "inventory", "products", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Manufacturers",
+      "item": [
+        {
+          "name": "List Manufacturers",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/manufacturers/", "host": ["{{base_url}}"], "path": ["api", "inventory", "manufacturers", ""] }
+          }
+        },
+        {
+          "name": "Create Manufacturer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ABC Pharma\",\n  \"contact_person\": \"John Doe\",\n  \"phone\": \"9876543210\",\n  \"email\": \"abc@pharma.com\",\n  \"address\": \"Mumbai\",\n  \"gstin\": \"27ABCDE1234F1Z5\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/inventory/manufacturers/", "host": ["{{base_url}}"], "path": ["api", "inventory", "manufacturers", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/customers/", "host": ["{{base_url}}"], "path": ["api", "inventory", "customers", ""] }
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"XYZ Hospital\",\n  \"customer_type\": \"hospital\",\n  \"contact_person\": \"Dr. Smith\",\n  \"phone\": \"9123456789\",\n  \"email\": \"xyz@hospital.com\",\n  \"address\": \"Delhi\",\n  \"gstin\": \"07XYZD1234F1Z2\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/inventory/customers/", "host": ["{{base_url}}"], "path": ["api", "inventory", "customers", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Purchase Orders",
+      "item": [
+        {
+          "name": "List Purchase Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/purchase-orders/", "host": ["{{base_url}}"], "path": ["api", "inventory", "purchase-orders", ""] }
+          }
+        },
+        {
+          "name": "Create Purchase Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"manufacturer_id\": 1,\n  \"order_date\": \"2024-07-01\",\n  \"total_amount\": \"10000.00\",\n  \"status\": \"pending\",\n  \"payment_due_date\": \"2024-07-15\",\n  \"payment_status\": \"pending\",\n  \"remarks\": \"Urgent order\",\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"quantity\": 100,\n      \"unit_price\": \"100.00\",\n      \"batch_number\": \"BATCH001\",\n      \"manufacture_date\": \"2024-06-01\",\n      \"expiry_date\": \"2026-06-01\"\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/inventory/purchase-orders/", "host": ["{{base_url}}"], "path": ["api", "inventory", "purchase-orders", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sale Orders",
+      "item": [
+        {
+          "name": "List Sale Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/sale-orders/", "host": ["{{base_url}}"], "path": ["api", "inventory", "sale-orders", ""] }
+          }
+        },
+        {
+          "name": "Create Sale Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": 1,\n  \"order_date\": \"2024-07-02\",\n  \"total_amount\": \"5000.00\",\n  \"status\": \"pending\",\n  \"payment_due_date\": \"2024-07-20\",\n  \"payment_status\": \"pending\",\n  \"remarks\": \"First order\",\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"batch_id\": 1,\n      \"quantity\": 50,\n      \"unit_price\": \"100.00\"\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/inventory/sale-orders/", "host": ["{{base_url}}"], "path": ["api", "inventory", "sale-orders", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Stock Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/reports/stock-summary/", "host": ["{{base_url}}"], "path": ["api", "inventory", "reports", "stock-summary", ""] }
+          }
+        },
+        {
+          "name": "Expired Stock",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/reports/expired-stock/", "host": ["{{base_url}}"], "path": ["api", "inventory", "reports", "expired-stock", ""] }
+          }
+        },
+        {
+          "name": "Low Stock",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/reports/low-stock/?threshold=10", "host": ["{{base_url}}"], "path": ["api", "inventory", "reports", "low-stock", ""], "query": [{"key": "threshold", "value": "10"}] }
+          }
+        },
+        {
+          "name": "Outstanding Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/reports/outstanding-payments/", "host": ["{{base_url}}"], "path": ["api", "inventory", "reports", "outstanding-payments", ""] }
+          }
+        },
+        {
+          "name": "Inventory Movement (Product)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/reports/inventory-movement/?product_id=1", "host": ["{{base_url}}"], "path": ["api", "inventory", "reports", "inventory-movement", ""], "query": [{"key": "product_id", "value": "1"}] }
+          }
+        },
+        {
+          "name": "Inventory Movement (Batch)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{base_url}}/api/inventory/reports/inventory-movement/?batch_id=1", "host": ["{{base_url}}"], "path": ["api", "inventory", "reports", "inventory-movement", ""], "query": [{"key": "batch_id", "value": "1"}] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "access_token", "value": "<your_access_token>" }
+  ]
+} 
