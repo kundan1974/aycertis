@@ -30,6 +30,9 @@ Ensure clear endpoint design, proper HTTP methods, and appropriate status codes.
 Generate comprehensive API documentation (e.g., using OpenAPI/Swagger specifications) where applicable.
 
 Frontend (React & Tailwind):
+For documentation use - 
+1. https://tailwindcss.com/docs/installation/framework-guides/react-router
+2. https://tailwindcss.com/docs/installation/using-vite
 
 All frontend code generation and suggestions must use React for component-based UI development.
 

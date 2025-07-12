@@ -60,6 +60,9 @@ API: RESTful APIs
 Frontend: React
 
 Styling: Tailwind CSS
+For documentation use - 
+1. https://tailwindcss.com/docs/installation/framework-guides/react-router
+2. https://tailwindcss.com/docs/installation/using-vite
 
 4. Key Deliverables:
 
