@@ -23,4 +23,7 @@ function redirectIfAuth() {
 export default [
   route("/login", "routes/login.tsx"),
   index("routes/home.tsx"),
+  route("/inventory", "routes/inventory.tsx"),
+  route("/orders", "routes/orders.tsx"),
+  route("/reports", "routes/reports.tsx"),
 ] satisfies RouteConfig;

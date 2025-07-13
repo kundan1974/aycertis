@@ -4,6 +4,8 @@ import type { Route } from "./+types/home"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
 import logo from "../media/logo_black.png"
+import Sidebar from "../components/Sidebar"
+import MainLayout from "../components/MainLayout"
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Dashboard | Aycertis" }, { name: "description", content: "Aycertis Inventory Dashboard" }]
@@ -210,489 +212,369 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-50 via-blue-50 to-green-50">
-      {/* Sidebar */}
-      <aside className="w-72 bg-white/80 backdrop-blur-sm shadow-xl border-r border-blue-100/50 flex flex-col p-6 min-h-screen">
-        {/* User Profile Section */}
-        <div
-          className="flex items-center gap-4 mb-8 cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 rounded-xl p-3 transition-all duration-300 group"
-          onClick={() => setProfileOpen(true)}
-          tabIndex={0}
-          role="button"
-          aria-label="View profile"
-        >
-          <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-green-500 text-white text-lg font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-            {getInitials(user.first_name ? user.first_name + " " + (user.last_name || "") : user.username)}
-          </div>
-          <div className="flex flex-col">
-            <span className="font-semibold text-slate-800 group-hover:text-blue-700 transition-colors duration-300">
-              {user.first_name ? user.first_name + " " + (user.last_name || "") : user.username || "User"}
-            </span>
-            <span className="text-sm text-slate-500 group-hover:text-green-600 transition-colors duration-300">
-              {user.role || "Role"}
-            </span>
-          </div>
+    <MainLayout active="dashboard">
+      {/* Top Bar */}
+      <div className="flex justify-between items-center mb-10">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent">
+            Dashboard
+          </h1>
+          <p className="text-slate-600 mt-2 text-lg">
+            Welcome{user.first_name ? `, ${user.first_name}` : ""}! Here's your business overview.
+          </p>
         </div>
-
-        {/* Logo Section */}
-        <div className="flex items-center mb-10 px-3">
-          <img src={logo || "/placeholder.svg"} alt="Aycertis Logo" className="h-10 mr-3" />
-          <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-            Life Sciences
+      </div>
+      {/* Dashboard Widgets */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+        {/* Total Products Card */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-slate-500 text-sm font-medium">Total Products</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center group-hover:from-blue-200 group-hover:to-blue-300 transition-all duration-300">
+              <div className="w-4 h-4 bg-blue-500 rounded-sm"></div>
+            </div>
+          </div>
+          <span className="text-3xl font-bold text-slate-800">
+            {dashboardLoading ? (
+              <span className="animate-pulse text-slate-400">...</span>
+            ) : totalProducts !== null ? (
+              totalProducts.toLocaleString()
+            ) : (
+              "--"
+            )}
           </span>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 space-y-2">
-          <a
-            href="#"
-            className="flex items-center px-4 py-3 rounded-xl text-blue-700 bg-gradient-to-r from-blue-100 to-green-100 font-semibold shadow-sm border border-blue-200/50 transition-all duration-300"
-          >
-            <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-            Dashboard
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-4 py-3 rounded-xl text-slate-600 hover:text-blue-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 transition-all duration-300 group"
-          >
-            <span className="w-2 h-2 bg-slate-300 group-hover:bg-blue-400 rounded-full mr-3 transition-colors duration-300"></span>
-            Inventory
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-4 py-3 rounded-xl text-slate-600 hover:text-blue-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 transition-all duration-300 group"
-          >
-            <span className="w-2 h-2 bg-slate-300 group-hover:bg-green-400 rounded-full mr-3 transition-colors duration-300"></span>
-            Orders
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-4 py-3 rounded-xl text-slate-600 hover:text-blue-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 transition-all duration-300 group"
-          >
-            <span className="w-2 h-2 bg-slate-300 group-hover:bg-blue-400 rounded-full mr-3 transition-colors duration-300"></span>
-            Reports
-          </a>
-        </nav>
+        {/* Low Stock Card */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-amber-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-slate-500 text-sm font-medium">Low Stock</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl flex items-center justify-center group-hover:from-amber-200 group-hover:to-amber-300 transition-all duration-300">
+              <div className="w-4 h-4 bg-amber-500 rounded-sm"></div>
+            </div>
+          </div>
+          <span className="text-3xl font-bold text-amber-600">
+            {dashboardLoading ? (
+              <span className="animate-pulse text-slate-400">...</span>
+            ) : lowStock !== null ? (
+              lowStock.toLocaleString()
+            ) : (
+              "--"
+            )}
+          </span>
+        </div>
 
-        {/* Logout Button */}
+        {/* Expired/Expiring Stock Card */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-red-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-slate-500 text-sm font-medium">Expiring/Expired</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center group-hover:from-red-200 group-hover:to-red-300 transition-all duration-300">
+              <div className="w-4 h-4 bg-red-500 rounded-sm"></div>
+            </div>
+          </div>
+          <span className="text-3xl font-bold text-red-600">
+            {dashboardLoading ? (
+              <span className="animate-pulse text-slate-400">...</span>
+            ) : expiredStock !== null ? (
+              expiredStock.toLocaleString()
+            ) : (
+              "--"
+            )}
+          </span>
+        </div>
+
+        {/* Outstanding Payments Card */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-slate-500 text-sm font-medium">Outstanding Payments</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center group-hover:from-green-200 group-hover:to-green-300 transition-all duration-300">
+              <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
+            </div>
+          </div>
+          <span className="text-3xl font-bold text-green-600">
+            {dashboardLoading ? (
+              <span className="animate-pulse text-slate-400">...</span>
+            ) : outstandingPayments !== null ? (
+              outstandingPayments
+            ) : (
+              "--"
+            )}
+          </span>
+        </div>
+
+        {/* Sales Orders Card */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-emerald-100/50 p-6 hover:shadow-xl transition-all duration-300 col-span-1">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-slate-500 text-sm font-medium">Sales Orders</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl flex items-center justify-center">
+              <div className="w-4 h-4 bg-emerald-500 rounded-sm"></div>
+            </div>
+          </div>
+          {salesOrdersLoading ? (
+            <span className="animate-pulse text-slate-400 text-3xl font-bold">...</span>
+          ) : salesOrdersError ? (
+            <span className="text-red-600 text-sm">{salesOrdersError}</span>
+          ) : (
+            <div className="space-y-2">
+              <span className="text-3xl font-bold text-emerald-600">{salesOrdersKPIs.total.toLocaleString()}</span>
+              <div className="space-y-1">
+                <div className="text-xs text-slate-500">
+                  Pending: <span className="font-medium text-slate-700">{salesOrdersKPIs.pending}</span>
+                </div>
+                <div className="text-xs text-slate-500">
+                  Total Value:{" "}
+                  <span className="font-medium text-slate-700">₹{salesOrdersKPIs.totalValue.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Purchase Orders Card */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 p-6 hover:shadow-xl transition-all duration-300 col-span-1">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-slate-500 text-sm font-medium">Purchase Orders</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center">
+              <div className="w-4 h-4 bg-indigo-500 rounded-sm"></div>
+            </div>
+          </div>
+          {purchaseOrdersLoading ? (
+            <span className="animate-pulse text-slate-400 text-3xl font-bold">...</span>
+          ) : purchaseOrdersError ? (
+            <span className="text-red-600 text-sm">{purchaseOrdersError}</span>
+          ) : (
+            <div className="space-y-2">
+              <span className="text-3xl font-bold text-indigo-600">{purchaseOrdersKPIs.total.toLocaleString()}</span>
+              <div className="space-y-1">
+                <div className="text-xs text-slate-500">
+                  Pending: <span className="font-medium text-slate-700">{purchaseOrdersKPIs.pending}</span>
+                </div>
+                <div className="text-xs text-slate-500">
+                  Total Value:{" "}
+                  <span className="font-medium text-slate-700">
+                    ₹{purchaseOrdersKPIs.totalValue.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Recent Inventory Movements Accordion */}
+      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100/50 mb-8 overflow-hidden">
         <button
-          onClick={handleLogout}
-          className="mt-8 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+          className={`w-full flex justify-between items-center px-8 py-6 focus:outline-none text-xl font-semibold transition-all duration-300 ${
+            showInventory
+              ? "bg-gradient-to-r from-green-50 to-blue-50 text-green-700 border-b border-green-100/50"
+              : "text-slate-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 hover:text-blue-700"
+          }`}
+          onClick={() => setShowInventory((v) => !v)}
+          aria-expanded={showInventory}
+          aria-controls="inventory-accordion"
         >
-          Logout
+          <span className="flex items-center">
+            <div
+              className={`w-3 h-3 rounded-full mr-4 transition-colors duration-300 ${showInventory ? "bg-green-500" : "bg-slate-300"}`}
+            ></div>
+            Recent Inventory Movements
+          </span>
+          <span className={`text-2xl transition-transform duration-300 ${showInventory ? "rotate-45" : ""}`}>+</span>
         </button>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-8 overflow-auto">
-        {/* Top Bar */}
-        <div className="flex justify-between items-center mb-10">
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent">
-              Dashboard
-            </h1>
-            <p className="text-slate-600 mt-2 text-lg">
-              Welcome{user.first_name ? `, ${user.first_name}` : ""}! Here's your business overview.
-            </p>
-          </div>
-        </div>
-
-        {/* Dashboard Widgets */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-          {/* Total Products Card */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-500 text-sm font-medium">Total Products</span>
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center group-hover:from-blue-200 group-hover:to-blue-300 transition-all duration-300">
-                <div className="w-4 h-4 bg-blue-500 rounded-sm"></div>
+        {showInventory && (
+          <div id="inventory-accordion" className="px-8 pb-8">
+            {dashboardLoading ? (
+              <div className="text-slate-500 py-8 text-center">Loading...</div>
+            ) : dashboardError ? (
+              <div className="text-red-600 py-8 text-center">{dashboardError}</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="border-b border-slate-200">
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Type</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Product</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Quantity</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {recentMovements.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-8 text-slate-500 text-center">
+                          No recent movements
+                        </td>
+                      </tr>
+                    ) : (
+                      recentMovements.map((item, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/50 transition-colors duration-200">
+                          <td className="px-4 py-4 text-slate-700">{item.date || "--"}</td>
+                          <td className="px-4 py-4">
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                              {item.transaction_type || "--"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 text-slate-700 font-medium">
+                            {item.product_name || item.product || "--"}
+                          </td>
+                          <td className="px-4 py-4 text-slate-700">{item.quantity || "--"}</td>
+                          <td className="px-4 py-4 text-slate-600 text-sm">{item.remarks || "--"}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
-            </div>
-            <span className="text-3xl font-bold text-slate-800">
-              {dashboardLoading ? (
-                <span className="animate-pulse text-slate-400">...</span>
-              ) : totalProducts !== null ? (
-                totalProducts.toLocaleString()
-              ) : (
-                "--"
-              )}
-            </span>
+            )}
           </div>
+        )}
+      </div>
 
-          {/* Low Stock Card */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-amber-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-500 text-sm font-medium">Low Stock</span>
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl flex items-center justify-center group-hover:from-amber-200 group-hover:to-amber-300 transition-all duration-300">
-                <div className="w-4 h-4 bg-amber-500 rounded-sm"></div>
-              </div>
-            </div>
-            <span className="text-3xl font-bold text-amber-600">
-              {dashboardLoading ? (
-                <span className="animate-pulse text-slate-400">...</span>
-              ) : lowStock !== null ? (
-                lowStock.toLocaleString()
-              ) : (
-                "--"
-              )}
-            </span>
-          </div>
-
-          {/* Expired/Expiring Stock Card */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-red-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-500 text-sm font-medium">Expiring/Expired</span>
-              <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center group-hover:from-red-200 group-hover:to-red-300 transition-all duration-300">
-                <div className="w-4 h-4 bg-red-500 rounded-sm"></div>
-              </div>
-            </div>
-            <span className="text-3xl font-bold text-red-600">
-              {dashboardLoading ? (
-                <span className="animate-pulse text-slate-400">...</span>
-              ) : expiredStock !== null ? (
-                expiredStock.toLocaleString()
-              ) : (
-                "--"
-              )}
-            </span>
-          </div>
-
-          {/* Outstanding Payments Card */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-500 text-sm font-medium">Outstanding Payments</span>
-              <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center group-hover:from-green-200 group-hover:to-green-300 transition-all duration-300">
-                <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
-              </div>
-            </div>
-            <span className="text-3xl font-bold text-green-600">
-              {dashboardLoading ? (
-                <span className="animate-pulse text-slate-400">...</span>
-              ) : outstandingPayments !== null ? (
-                outstandingPayments
-              ) : (
-                "--"
-              )}
-            </span>
-          </div>
-
-          {/* Sales Orders Card */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-emerald-100/50 p-6 hover:shadow-xl transition-all duration-300 col-span-1">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-500 text-sm font-medium">Sales Orders</span>
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl flex items-center justify-center">
-                <div className="w-4 h-4 bg-emerald-500 rounded-sm"></div>
-              </div>
-            </div>
+      {/* Recent Sales Orders Accordion */}
+      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100/50 mb-8 overflow-hidden">
+        <button
+          className={`w-full flex justify-between items-center px-8 py-6 focus:outline-none text-xl font-semibold transition-all duration-300 ${
+            showSales
+              ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border-b border-green-100/50"
+              : "text-slate-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:text-green-700"
+          }`}
+          onClick={() => setShowSales((v) => !v)}
+          aria-expanded={showSales}
+          aria-controls="sales-accordion"
+        >
+          <span className="flex items-center">
+            <div
+              className={`w-3 h-3 rounded-full mr-4 transition-colors duration-300 ${showSales ? "bg-green-500" : "bg-slate-300"}`}
+            ></div>
+            Recent Sales Orders
+          </span>
+          <span className={`text-2xl transition-transform duration-300 ${showSales ? "rotate-45" : ""}`}>+</span>
+        </button>
+        {showSales && (
+          <div id="sales-accordion" className="px-8 pb-8">
             {salesOrdersLoading ? (
-              <span className="animate-pulse text-slate-400 text-3xl font-bold">...</span>
+              <div className="text-slate-500 py-8 text-center">Loading...</div>
             ) : salesOrdersError ? (
-              <span className="text-red-600 text-sm">{salesOrdersError}</span>
+              <div className="text-red-600 py-8 text-center">{salesOrdersError}</div>
             ) : (
-              <div className="space-y-2">
-                <span className="text-3xl font-bold text-emerald-600">{salesOrdersKPIs.total.toLocaleString()}</span>
-                <div className="space-y-1">
-                  <div className="text-xs text-slate-500">
-                    Pending: <span className="font-medium text-slate-700">{salesOrdersKPIs.pending}</span>
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    Total Value:{" "}
-                    <span className="font-medium text-slate-700">₹{salesOrdersKPIs.totalValue.toLocaleString()}</span>
-                  </div>
-                </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="border-b border-slate-200">
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Customer</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {salesOrders.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-8 text-slate-500 text-center">
+                          No recent sales orders
+                        </td>
+                      </tr>
+                    ) : (
+                      salesOrders.map((order, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/50 transition-colors duration-200">
+                          <td className="px-4 py-4 text-slate-700">{order.order_date || "--"}</td>
+                          <td className="px-4 py-4 text-slate-700 font-medium">
+                            {order.customer_name ||
+                              (order.customer && typeof order.customer === "object"
+                                ? order.customer.name
+                                : order.customer) ||
+                              "--"}
+                          </td>
+                          <td className="px-4 py-4">
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                              {order.status || "--"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 text-slate-700 font-semibold">₹{order.total_amount || "--"}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
+        )}
+      </div>
 
-          {/* Purchase Orders Card */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 p-6 hover:shadow-xl transition-all duration-300 col-span-1">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-500 text-sm font-medium">Purchase Orders</span>
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center">
-                <div className="w-4 h-4 bg-indigo-500 rounded-sm"></div>
-              </div>
-            </div>
+      {/* Recent Purchase Orders Accordion */}
+      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 mb-8 overflow-hidden">
+        <button
+          className={`w-full flex justify-between items-center px-8 py-6 focus:outline-none text-xl font-semibold transition-all duration-300 ${
+            showPurchase
+              ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-b border-blue-100/50"
+              : "text-slate-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700"
+          }`}
+          onClick={() => setShowPurchase((v) => !v)}
+          aria-expanded={showPurchase}
+          aria-controls="purchase-accordion"
+        >
+          <span className="flex items-center">
+            <div
+              className={`w-3 h-3 rounded-full mr-4 transition-colors duration-300 ${showPurchase ? "bg-blue-500" : "bg-slate-300"}`}
+            ></div>
+            Recent Purchase Orders
+          </span>
+          <span className={`text-2xl transition-transform duration-300 ${showPurchase ? "rotate-45" : ""}`}>+</span>
+        </button>
+        {showPurchase && (
+          <div id="purchase-accordion" className="px-8 pb-8">
             {purchaseOrdersLoading ? (
-              <span className="animate-pulse text-slate-400 text-3xl font-bold">...</span>
+              <div className="text-slate-500 py-8 text-center">Loading...</div>
             ) : purchaseOrdersError ? (
-              <span className="text-red-600 text-sm">{purchaseOrdersError}</span>
+              <div className="text-red-600 py-8 text-center">{purchaseOrdersError}</div>
             ) : (
-              <div className="space-y-2">
-                <span className="text-3xl font-bold text-indigo-600">{purchaseOrdersKPIs.total.toLocaleString()}</span>
-                <div className="space-y-1">
-                  <div className="text-xs text-slate-500">
-                    Pending: <span className="font-medium text-slate-700">{purchaseOrdersKPIs.pending}</span>
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    Total Value:{" "}
-                    <span className="font-medium text-slate-700">
-                      ₹{purchaseOrdersKPIs.totalValue.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="border-b border-slate-200">
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Supplier</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
+                      <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {purchaseOrders.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-8 text-slate-500 text-center">
+                          No recent purchase orders
+                        </td>
+                      </tr>
+                    ) : (
+                      purchaseOrders.map((order, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/50 transition-colors duration-200">
+                          <td className="px-4 py-4 text-slate-700">{order.order_date || "--"}</td>
+                          <td className="px-4 py-4 text-slate-700 font-medium">
+                            {order.manufacturer_name ||
+                              (order.manufacturer && typeof order.manufacturer === "object"
+                                ? order.manufacturer.name
+                                : order.manufacturer) ||
+                              "--"}
+                          </td>
+                          <td className="px-4 py-4">
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                              {order.status || "--"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 text-slate-700 font-semibold">₹{order.total_amount || "--"}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
-        </div>
-
-        {/* Recent Inventory Movements Accordion */}
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100/50 mb-8 overflow-hidden">
-          <button
-            className={`w-full flex justify-between items-center px-8 py-6 focus:outline-none text-xl font-semibold transition-all duration-300 ${
-              showInventory
-                ? "bg-gradient-to-r from-green-50 to-blue-50 text-green-700 border-b border-green-100/50"
-                : "text-slate-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 hover:text-blue-700"
-            }`}
-            onClick={() => setShowInventory((v) => !v)}
-            aria-expanded={showInventory}
-            aria-controls="inventory-accordion"
-          >
-            <span className="flex items-center">
-              <div
-                className={`w-3 h-3 rounded-full mr-4 transition-colors duration-300 ${showInventory ? "bg-green-500" : "bg-slate-300"}`}
-              ></div>
-              Recent Inventory Movements
-            </span>
-            <span className={`text-2xl transition-transform duration-300 ${showInventory ? "rotate-45" : ""}`}>+</span>
-          </button>
-          {showInventory && (
-            <div id="inventory-accordion" className="px-8 pb-8">
-              {dashboardLoading ? (
-                <div className="text-slate-500 py-8 text-center">Loading...</div>
-              ) : dashboardError ? (
-                <div className="text-red-600 py-8 text-center">{dashboardError}</div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Type</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Product</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Quantity</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Remarks</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {recentMovements.length === 0 ? (
-                        <tr>
-                          <td colSpan={5} className="px-4 py-8 text-slate-500 text-center">
-                            No recent movements
-                          </td>
-                        </tr>
-                      ) : (
-                        recentMovements.map((item, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50/50 transition-colors duration-200">
-                            <td className="px-4 py-4 text-slate-700">{item.date || "--"}</td>
-                            <td className="px-4 py-4">
-                              <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                {item.transaction_type || "--"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-4 text-slate-700 font-medium">
-                              {item.product_name || item.product || "--"}
-                            </td>
-                            <td className="px-4 py-4 text-slate-700">{item.quantity || "--"}</td>
-                            <td className="px-4 py-4 text-slate-600 text-sm">{item.remarks || "--"}</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Recent Sales Orders Accordion */}
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100/50 mb-8 overflow-hidden">
-          <button
-            className={`w-full flex justify-between items-center px-8 py-6 focus:outline-none text-xl font-semibold transition-all duration-300 ${
-              showSales
-                ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border-b border-green-100/50"
-                : "text-slate-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:text-green-700"
-            }`}
-            onClick={() => setShowSales((v) => !v)}
-            aria-expanded={showSales}
-            aria-controls="sales-accordion"
-          >
-            <span className="flex items-center">
-              <div
-                className={`w-3 h-3 rounded-full mr-4 transition-colors duration-300 ${showSales ? "bg-green-500" : "bg-slate-300"}`}
-              ></div>
-              Recent Sales Orders
-            </span>
-            <span className={`text-2xl transition-transform duration-300 ${showSales ? "rotate-45" : ""}`}>+</span>
-          </button>
-          {showSales && (
-            <div id="sales-accordion" className="px-8 pb-8">
-              {salesOrdersLoading ? (
-                <div className="text-slate-500 py-8 text-center">Loading...</div>
-              ) : salesOrdersError ? (
-                <div className="text-red-600 py-8 text-center">{salesOrdersError}</div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Customer</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {salesOrders.length === 0 ? (
-                        <tr>
-                          <td colSpan={4} className="px-4 py-8 text-slate-500 text-center">
-                            No recent sales orders
-                          </td>
-                        </tr>
-                      ) : (
-                        salesOrders.map((order, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50/50 transition-colors duration-200">
-                            <td className="px-4 py-4 text-slate-700">{order.order_date || "--"}</td>
-                            <td className="px-4 py-4 text-slate-700 font-medium">
-                              {order.customer_name ||
-                                (order.customer && typeof order.customer === "object"
-                                  ? order.customer.name
-                                  : order.customer) ||
-                                "--"}
-                            </td>
-                            <td className="px-4 py-4">
-                              <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                {order.status || "--"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-4 text-slate-700 font-semibold">₹{order.total_amount || "--"}</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Recent Purchase Orders Accordion */}
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 mb-8 overflow-hidden">
-          <button
-            className={`w-full flex justify-between items-center px-8 py-6 focus:outline-none text-xl font-semibold transition-all duration-300 ${
-              showPurchase
-                ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-b border-blue-100/50"
-                : "text-slate-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700"
-            }`}
-            onClick={() => setShowPurchase((v) => !v)}
-            aria-expanded={showPurchase}
-            aria-controls="purchase-accordion"
-          >
-            <span className="flex items-center">
-              <div
-                className={`w-3 h-3 rounded-full mr-4 transition-colors duration-300 ${showPurchase ? "bg-blue-500" : "bg-slate-300"}`}
-              ></div>
-              Recent Purchase Orders
-            </span>
-            <span className={`text-2xl transition-transform duration-300 ${showPurchase ? "rotate-45" : ""}`}>+</span>
-          </button>
-          {showPurchase && (
-            <div id="purchase-accordion" className="px-8 pb-8">
-              {purchaseOrdersLoading ? (
-                <div className="text-slate-500 py-8 text-center">Loading...</div>
-              ) : purchaseOrdersError ? (
-                <div className="text-red-600 py-8 text-center">{purchaseOrdersError}</div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full">
-                    <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Supplier</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
-                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {purchaseOrders.length === 0 ? (
-                        <tr>
-                          <td colSpan={4} className="px-4 py-8 text-slate-500 text-center">
-                            No recent purchase orders
-                          </td>
-                        </tr>
-                      ) : (
-                        purchaseOrders.map((order, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50/50 transition-colors duration-200">
-                            <td className="px-4 py-4 text-slate-700">{order.order_date || "--"}</td>
-                            <td className="px-4 py-4 text-slate-700 font-medium">
-                              {order.manufacturer_name ||
-                                (order.manufacturer && typeof order.manufacturer === "object"
-                                  ? order.manufacturer.name
-                                  : order.manufacturer) ||
-                                "--"}
-                            </td>
-                            <td className="px-4 py-4">
-                              <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                {order.status || "--"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-4 text-slate-700 font-semibold">₹{order.total_amount || "--"}</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </main>
-
-      {/* User Profile Modal */}
-      {profileOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-blue-100/50 p-8 w-full max-w-md relative">
-            <button
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-2xl transition-colors duration-200"
-              onClick={() => setProfileOpen(false)}
-              aria-label="Close profile"
-            >
-              ×
-            </button>
-            <div className="flex flex-col items-center mb-8">
-              <div className="flex items-center justify-center h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 to-green-500 text-white text-2xl font-bold mb-4 shadow-lg">
-                {getInitials(user.first_name ? user.first_name + " " + (user.last_name || "") : user.username)}
-              </div>
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                {user.first_name ? user.first_name + " " + (user.last_name || "") : user.username || "User"}
-              </h2>
-              <span className="text-slate-500 text-sm px-3 py-1 bg-blue-100 rounded-full">{user.role || "Role"}</span>
-            </div>
-            {loadingProfile ? (
-              <div className="text-slate-500 text-center">Loading...</div>
-            ) : profileError ? (
-              <div className="text-red-600 text-center">{profileError}</div>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
-                  <span className="font-semibold text-slate-600">Email:</span>
-                  <span className="text-slate-800">{user.email || "-"}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
-                  <span className="font-semibold text-slate-600">Department:</span>
-                  <span className="text-slate-800">{user.department || "-"}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
-                  <span className="font-semibold text-slate-600">Role:</span>
-                  <span className="text-slate-800">{user.role || "-"}</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </MainLayout>
   )
 }
 

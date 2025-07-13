@@ -6,7 +6,8 @@ from .views import (
     SaleOrderViewSet, SaleOrderItemViewSet, InventoryTransactionViewSet,
     PaymentViewSet, AuditLogViewSet,
     StockSummaryReportView, ExpiredStockReportView, LowStockReportView,
-    OutstandingPaymentsReportView, InventoryMovementReportView
+    OutstandingPaymentsReportView, InventoryMovementReportView, 
+    ProductsByManufacturerView
 )
 
 router = DefaultRouter()
@@ -23,6 +24,7 @@ router.register(r'payments', PaymentViewSet)
 router.register(r'audit-logs', AuditLogViewSet, basename='auditlog')
 
 urlpatterns = [
+     path('products/by-manufacturer/', ProductsByManufacturerView.as_view(), name='products-by-manufacturer'),
     path('', include(router.urls)),
     # Smart report endpoints
     path('reports/stock-summary/', StockSummaryReportView.as_view(), name='stock-summary-report'),
@@ -30,4 +32,5 @@ urlpatterns = [
     path('reports/low-stock/', LowStockReportView.as_view(), name='low-stock-report'),
     path('reports/outstanding-payments/', OutstandingPaymentsReportView.as_view(), name='outstanding-payments-report'),
     path('reports/inventory-movement/', InventoryMovementReportView.as_view(), name='inventory-movement-report'),
+   
 ] 

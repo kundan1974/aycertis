@@ -3,6 +3,9 @@ from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models.deletion import ProtectedError
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from .models import (
     Product, Manufacturer, Customer, PurchaseOrder, PurchaseOrderItem, Batch,
     SaleOrder, SaleOrderItem, InventoryTransaction, Payment, AuditLog
@@ -23,6 +26,17 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ["name", "category", "hsn_code"]
     filterset_fields = ["is_active", "category"]
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            self.perform_destroy(instance)
+        except ProtectedError:
+            return Response(
+                {"detail": "Cannot delete this product because there are associated purchase orders, sales orders, or batches."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 # Manufacturer ViewSet
 class ManufacturerViewSet(viewsets.ModelViewSet):
     """CRUD for manufacturers."""
@@ -30,6 +44,21 @@ class ManufacturerViewSet(viewsets.ModelViewSet):
     serializer_class = ManufacturerSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ["name", "gstin"]
+
+class ProductsByManufacturerView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        manufacturer_id = request.query_params.get('manufacturer')
+        if not manufacturer_id:
+            return Response({"detail": "Manufacturer ID is required."}, status=400)
+        # Get all products that have ever been included in a purchase order from this manufacturer
+        product_ids = PurchaseOrderItem.objects.filter(
+            purchase_order__manufacturer_id=manufacturer_id
+        ).values_list('product_id', flat=True).distinct()
+        products = Product.objects.filter(id__in=product_ids)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
 
 # Customer ViewSet
 class CustomerViewSet(viewsets.ModelViewSet):
