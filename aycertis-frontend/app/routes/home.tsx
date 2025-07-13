@@ -1,95 +1,102 @@
-import type { Route } from "./+types/home";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import logo from "../media/logo_black.png";
+"use client"
+
+import type { Route } from "./+types/home"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router"
+import logo from "../media/logo_black.png"
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Dashboard | Aycertis" },
-    { name: "description", content: "Aycertis Inventory Dashboard" },
-  ];
+  return [{ title: "Dashboard | Aycertis" }, { name: "description", content: "Aycertis Inventory Dashboard" }]
 }
 
 function getInitials(name?: string) {
-  if (!name) return "U";
+  if (!name) return "U"
   return name
     .split(" ")
     .map((n) => n[0])
     .join("")
-    .toUpperCase();
+    .toUpperCase()
 }
 
 export default function Home() {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<any>({});
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [loadingProfile, setLoadingProfile] = useState(true);
-  const [profileError, setProfileError] = useState("");
+  const navigate = useNavigate()
+  const [user, setUser] = useState<any>({})
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [loadingProfile, setLoadingProfile] = useState(true)
+  const [profileError, setProfileError] = useState("")
 
   // Dashboard data states
-  const [dashboardLoading, setDashboardLoading] = useState(true);
-  const [dashboardError, setDashboardError] = useState("");
-  const [totalProducts, setTotalProducts] = useState<number | null>(null);
-  const [lowStock, setLowStock] = useState<number | null>(null);
-  const [expiredStock, setExpiredStock] = useState<number | null>(null);
-  const [outstandingPayments, setOutstandingPayments] = useState<string | null>(null);
-  const [recentMovements, setRecentMovements] = useState<any[]>([]);
+  const [dashboardLoading, setDashboardLoading] = useState(true)
+  const [dashboardError, setDashboardError] = useState("")
+  const [totalProducts, setTotalProducts] = useState<number | null>(null)
+  const [lowStock, setLowStock] = useState<number | null>(null)
+  const [expiredStock, setExpiredStock] = useState<number | null>(null)
+  const [outstandingPayments, setOutstandingPayments] = useState<string | null>(null)
+  const [recentMovements, setRecentMovements] = useState<any[]>([])
 
   // Sales & Purchase Orders
-  const [salesOrders, setSalesOrders] = useState<any[]>([]);
-  const [salesOrdersLoading, setSalesOrdersLoading] = useState(true);
-  const [salesOrdersError, setSalesOrdersError] = useState("");
-  const [salesOrdersKPIs, setSalesOrdersKPIs] = useState<{ total: number; pending: number; totalValue: number }>({ total: 0, pending: 0, totalValue: 0 });
+  const [salesOrders, setSalesOrders] = useState<any[]>([])
+  const [salesOrdersLoading, setSalesOrdersLoading] = useState(true)
+  const [salesOrdersError, setSalesOrdersError] = useState("")
+  const [salesOrdersKPIs, setSalesOrdersKPIs] = useState<{ total: number; pending: number; totalValue: number }>({
+    total: 0,
+    pending: 0,
+    totalValue: 0,
+  })
 
-  const [purchaseOrders, setPurchaseOrders] = useState<any[]>([]);
-  const [purchaseOrdersLoading, setPurchaseOrdersLoading] = useState(true);
-  const [purchaseOrdersError, setPurchaseOrdersError] = useState("");
-  const [purchaseOrdersKPIs, setPurchaseOrdersKPIs] = useState<{ total: number; pending: number; totalValue: number }>({ total: 0, pending: 0, totalValue: 0 });
+  const [purchaseOrders, setPurchaseOrders] = useState<any[]>([])
+  const [purchaseOrdersLoading, setPurchaseOrdersLoading] = useState(true)
+  const [purchaseOrdersError, setPurchaseOrdersError] = useState("")
+  const [purchaseOrdersKPIs, setPurchaseOrdersKPIs] = useState<{ total: number; pending: number; totalValue: number }>({
+    total: 0,
+    pending: 0,
+    totalValue: 0,
+  })
 
   // Accordion states
-  const [showInventory, setShowInventory] = useState(true);
-  const [showSales, setShowSales] = useState(false);
-  const [showPurchase, setShowPurchase] = useState(false);
+  const [showInventory, setShowInventory] = useState(true)
+  const [showSales, setShowSales] = useState(false)
+  const [showPurchase, setShowPurchase] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
+    const token = localStorage.getItem("access_token")
     if (!token) {
-      navigate("/login", { replace: true });
-      return;
+      navigate("/login", { replace: true })
+      return
     }
     // Fetch user profile
-    setLoadingProfile(true);
-    setProfileError("");
+    setLoadingProfile(true)
+    setProfileError("")
     fetch("/api/auth/profile/", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async (res) => {
         if (res.status === 401) {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
-          navigate("/login", { replace: true });
-          return null;
+          localStorage.removeItem("access_token")
+          localStorage.removeItem("refresh_token")
+          navigate("/login", { replace: true })
+          return null
         }
         if (!res.ok) {
-          throw new Error("Failed to fetch profile");
+          throw new Error("Failed to fetch profile")
         }
-        return res.json();
+        return res.json()
       })
       .then((data) => {
-        if (data) setUser(data);
-        setLoadingProfile(false);
+        if (data) setUser(data)
+        setLoadingProfile(false)
       })
       .catch((err) => {
-        setProfileError("Could not load profile");
-        setLoadingProfile(false);
-      });
-  }, [navigate]);
+        setProfileError("Could not load profile")
+        setLoadingProfile(false)
+      })
+  }, [navigate])
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    setDashboardLoading(true);
-    setDashboardError("");
+    const token = localStorage.getItem("access_token")
+    if (!token) return
+    setDashboardLoading(true)
+    setDashboardError("")
     // Fetch all dashboard data in parallel
     Promise.all([
       fetch("/api/inventory/products/", { headers: { Authorization: `Bearer ${token}` } }),
@@ -99,257 +106,393 @@ export default function Home() {
       fetch("/api/inventory/inventory-transactions/?limit=5", { headers: { Authorization: `Bearer ${token}` } }),
     ])
       .then(async ([productsRes, lowStockRes, expiredRes, paymentsRes, movementsRes]) => {
-        if ([productsRes, lowStockRes, expiredRes, paymentsRes, movementsRes].some(r => r.status === 401)) {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
-          navigate("/login", { replace: true });
-          return;
+        if ([productsRes, lowStockRes, expiredRes, paymentsRes, movementsRes].some((r) => r.status === 401)) {
+          localStorage.removeItem("access_token")
+          localStorage.removeItem("refresh_token")
+          navigate("/login", { replace: true })
+          return
         }
-        if ([productsRes, lowStockRes, expiredRes, paymentsRes, movementsRes].some(r => !r.ok)) {
-          throw new Error("Failed to fetch dashboard data");
+        if ([productsRes, lowStockRes, expiredRes, paymentsRes, movementsRes].some((r) => !r.ok)) {
+          throw new Error("Failed to fetch dashboard data")
         }
-        const products = await productsRes.json();
-        const lowStock = await lowStockRes.json();
-        const expired = await expiredRes.json();
-        const payments = await paymentsRes.json();
-        const movements = await movementsRes.json();
-        setTotalProducts(Array.isArray(products) ? products.length : (products.count || 0));
-        setLowStock(Array.isArray(lowStock) ? lowStock.length : (lowStock.count || 0));
-        setExpiredStock(Array.isArray(expired) ? expired.length : (expired.count || 0));
-        setOutstandingPayments(
-          payments && typeof payments === "object" && payments.total ? payments.total : "--"
-        );
-        setRecentMovements(Array.isArray(movements) ? movements.slice(0, 5) : (movements.results || []).slice(0, 5));
-        setDashboardLoading(false);
+        const products = await productsRes.json()
+        const lowStock = await lowStockRes.json()
+        const expired = await expiredRes.json()
+        const payments = await paymentsRes.json()
+        const movements = await movementsRes.json()
+        setTotalProducts(Array.isArray(products) ? products.length : products.count || 0)
+        setLowStock(Array.isArray(lowStock) ? lowStock.length : lowStock.count || 0)
+        setExpiredStock(Array.isArray(expired) ? expired.length : expired.count || 0)
+        setOutstandingPayments(payments && typeof payments === "object" && payments.total ? payments.total : "--")
+        setRecentMovements(Array.isArray(movements) ? movements.slice(0, 5) : (movements.results || []).slice(0, 5))
+        setDashboardLoading(false)
       })
       .catch((err) => {
-        setDashboardError("Could not load dashboard data");
-        setDashboardLoading(false);
-      });
-  }, [navigate]);
+        setDashboardError("Could not load dashboard data")
+        setDashboardLoading(false)
+      })
+  }, [navigate])
 
   // Fetch Sales Orders
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    setSalesOrdersLoading(true);
-    setSalesOrdersError("");
+    const token = localStorage.getItem("access_token")
+    if (!token) return
+    setSalesOrdersLoading(true)
+    setSalesOrdersError("")
     fetch("/api/inventory/sale-orders/?limit=5", { headers: { Authorization: `Bearer ${token}` } })
       .then(async (res) => {
         if (res.status === 401) {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
-          navigate("/login", { replace: true });
-          return null;
+          localStorage.removeItem("access_token")
+          localStorage.removeItem("refresh_token")
+          navigate("/login", { replace: true })
+          return null
         }
-        if (!res.ok) throw new Error("Failed to fetch sales orders");
-        return res.json();
+        if (!res.ok) throw new Error("Failed to fetch sales orders")
+        return res.json()
       })
       .then((data) => {
-        if (!data) return;
-        const orders = Array.isArray(data) ? data : (data.results || []);
-        setSalesOrders(orders);
+        if (!data) return
+        const orders = Array.isArray(data) ? data : data.results || []
+        setSalesOrders(orders)
         // KPIs
         setSalesOrdersKPIs({
           total: data.count || orders.length,
           pending: orders.filter((o: any) => o.status === "pending").length,
-          totalValue: orders.reduce((sum: number, o: any) => sum + parseFloat(o.total_amount || 0), 0),
-        });
-        setSalesOrdersLoading(false);
+          totalValue: orders.reduce((sum: number, o: any) => sum + Number.parseFloat(o.total_amount || 0), 0),
+        })
+        setSalesOrdersLoading(false)
       })
       .catch(() => {
-        setSalesOrdersError("Could not load sales orders");
-        setSalesOrdersLoading(false);
-      });
-  }, [navigate]);
+        setSalesOrdersError("Could not load sales orders")
+        setSalesOrdersLoading(false)
+      })
+  }, [navigate])
 
   // Fetch Purchase Orders
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    setPurchaseOrdersLoading(true);
-    setPurchaseOrdersError("");
+    const token = localStorage.getItem("access_token")
+    if (!token) return
+    setPurchaseOrdersLoading(true)
+    setPurchaseOrdersError("")
     fetch("/api/inventory/purchase-orders/?limit=5", { headers: { Authorization: `Bearer ${token}` } })
       .then(async (res) => {
         if (res.status === 401) {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("refresh_token");
-          navigate("/login", { replace: true });
-          return null;
+          localStorage.removeItem("access_token")
+          localStorage.removeItem("refresh_token")
+          navigate("/login", { replace: true })
+          return null
         }
-        if (!res.ok) throw new Error("Failed to fetch purchase orders");
-        return res.json();
+        if (!res.ok) throw new Error("Failed to fetch purchase orders")
+        return res.json()
       })
       .then((data) => {
-        if (!data) return;
-        const orders = Array.isArray(data) ? data : (data.results || []);
-        setPurchaseOrders(orders);
+        if (!data) return
+        const orders = Array.isArray(data) ? data : data.results || []
+        setPurchaseOrders(orders)
         // KPIs
         setPurchaseOrdersKPIs({
           total: data.count || orders.length,
           pending: orders.filter((o: any) => o.status === "pending").length,
-          totalValue: orders.reduce((sum: number, o: any) => sum + parseFloat(o.total_amount || 0), 0),
-        });
-        setPurchaseOrdersLoading(false);
+          totalValue: orders.reduce((sum: number, o: any) => sum + Number.parseFloat(o.total_amount || 0), 0),
+        })
+        setPurchaseOrdersLoading(false)
       })
       .catch(() => {
-        setPurchaseOrdersError("Could not load purchase orders");
-        setPurchaseOrdersLoading(false);
-      });
-  }, [navigate]);
+        setPurchaseOrdersError("Could not load purchase orders")
+        setPurchaseOrdersLoading(false)
+      })
+  }, [navigate])
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    navigate("/login", { replace: true });
-  };
+    localStorage.removeItem("access_token")
+    localStorage.removeItem("refresh_token")
+    navigate("/login", { replace: true })
+  }
 
   return (
-    <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen flex bg-gradient-to-br from-slate-50 via-blue-50 to-green-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-gray-800 shadow-lg flex flex-col p-6 min-h-screen">
+      <aside className="w-72 bg-white/80 backdrop-blur-sm shadow-xl border-r border-blue-100/50 flex flex-col p-6 min-h-screen">
         {/* User Profile Section */}
         <div
-          className="flex items-center gap-3 mb-10 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded p-2 transition"
+          className="flex items-center gap-4 mb-8 cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 rounded-xl p-3 transition-all duration-300 group"
           onClick={() => setProfileOpen(true)}
           tabIndex={0}
           role="button"
           aria-label="View profile"
         >
-          <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 text-white text-xl font-bold">
+          <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-green-500 text-white text-lg font-bold shadow-lg group-hover:shadow-xl transition-shadow duration-300">
             {getInitials(user.first_name ? user.first_name + " " + (user.last_name || "") : user.username)}
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold text-gray-900 dark:text-white">{user.first_name ? user.first_name + " " + (user.last_name || "") : user.username || "User"}</span>
-            <span className="text-xs text-gray-500 dark:text-gray-300">{user.role || "Role"}</span>
+            <span className="font-semibold text-slate-800 group-hover:text-blue-700 transition-colors duration-300">
+              {user.first_name ? user.first_name + " " + (user.last_name || "") : user.username || "User"}
+            </span>
+            <span className="text-sm text-slate-500 group-hover:text-green-600 transition-colors duration-300">
+              {user.role || "Role"}
+            </span>
           </div>
         </div>
-        <div className="flex items-center mb-10">
-          <img src={logo} alt="Aycertis Logo" className="h-10 mr-2" />
-          <span className="font-bold text-lg text-gray-900 dark:text-white">Aycertis</span>
+
+        {/* Logo Section */}
+        <div className="flex items-center mb-10 px-3">
+          <img src={logo || "/placeholder.svg"} alt="Aycertis Logo" className="h-10 mr-3" />
+          <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+            Life Sciences
+          </span>
         </div>
-        <nav className="flex-1 space-y-4">
-          <a href="#" className="block px-3 py-2 rounded text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 font-semibold">Dashboard</a>
-          <a href="#" className="block px-3 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Inventory</a>
-          <a href="#" className="block px-3 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Orders</a>
-          <a href="#" className="block px-3 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Reports</a>
+
+        {/* Navigation */}
+        <nav className="flex-1 space-y-2">
+          <a
+            href="#"
+            className="flex items-center px-4 py-3 rounded-xl text-blue-700 bg-gradient-to-r from-blue-100 to-green-100 font-semibold shadow-sm border border-blue-200/50 transition-all duration-300"
+          >
+            <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+            Dashboard
+          </a>
+          <a
+            href="#"
+            className="flex items-center px-4 py-3 rounded-xl text-slate-600 hover:text-blue-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 transition-all duration-300 group"
+          >
+            <span className="w-2 h-2 bg-slate-300 group-hover:bg-blue-400 rounded-full mr-3 transition-colors duration-300"></span>
+            Inventory
+          </a>
+          <a
+            href="#"
+            className="flex items-center px-4 py-3 rounded-xl text-slate-600 hover:text-blue-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 transition-all duration-300 group"
+          >
+            <span className="w-2 h-2 bg-slate-300 group-hover:bg-green-400 rounded-full mr-3 transition-colors duration-300"></span>
+            Orders
+          </a>
+          <a
+            href="#"
+            className="flex items-center px-4 py-3 rounded-xl text-slate-600 hover:text-blue-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 transition-all duration-300 group"
+          >
+            <span className="w-2 h-2 bg-slate-300 group-hover:bg-blue-400 rounded-full mr-3 transition-colors duration-300"></span>
+            Reports
+          </a>
         </nav>
-        <button onClick={handleLogout} className="mt-10 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Logout</button>
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="mt-8 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+        >
+          Logout
+        </button>
       </aside>
+
       {/* Main Content */}
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-8 overflow-auto">
         {/* Top Bar */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-10">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-1">
-              Welcome{user.first_name ? `, ${user.first_name}` : ""}!
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent">
+              Dashboard
+            </h1>
+            <p className="text-slate-600 mt-2 text-lg">
+              Welcome{user.first_name ? `, ${user.first_name}` : ""}! Here's your business overview.
             </p>
           </div>
         </div>
+
         {/* Dashboard Widgets */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-          {/* Stock Summary Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-start">
-            <span className="text-gray-500 dark:text-gray-400 text-sm mb-2">Total Products</span>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              {dashboardLoading ? <span className="animate-pulse">...</span> : (totalProducts !== null ? totalProducts : "--")}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+          {/* Total Products Card */}
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-slate-500 text-sm font-medium">Total Products</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center group-hover:from-blue-200 group-hover:to-blue-300 transition-all duration-300">
+                <div className="w-4 h-4 bg-blue-500 rounded-sm"></div>
+              </div>
+            </div>
+            <span className="text-3xl font-bold text-slate-800">
+              {dashboardLoading ? (
+                <span className="animate-pulse text-slate-400">...</span>
+              ) : totalProducts !== null ? (
+                totalProducts.toLocaleString()
+              ) : (
+                "--"
+              )}
             </span>
           </div>
+
           {/* Low Stock Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-start">
-            <span className="text-gray-500 dark:text-gray-400 text-sm mb-2">Low Stock</span>
-            <span className="text-2xl font-bold text-yellow-500">
-              {dashboardLoading ? <span className="animate-pulse">...</span> : (lowStock !== null ? lowStock : "--")}
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-amber-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-slate-500 text-sm font-medium">Low Stock</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl flex items-center justify-center group-hover:from-amber-200 group-hover:to-amber-300 transition-all duration-300">
+                <div className="w-4 h-4 bg-amber-500 rounded-sm"></div>
+              </div>
+            </div>
+            <span className="text-3xl font-bold text-amber-600">
+              {dashboardLoading ? (
+                <span className="animate-pulse text-slate-400">...</span>
+              ) : lowStock !== null ? (
+                lowStock.toLocaleString()
+              ) : (
+                "--"
+              )}
             </span>
           </div>
+
           {/* Expired/Expiring Stock Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-start">
-            <span className="text-gray-500 dark:text-gray-400 text-sm mb-2">Expiring/Expired</span>
-            <span className="text-2xl font-bold text-red-500">
-              {dashboardLoading ? <span className="animate-pulse">...</span> : (expiredStock !== null ? expiredStock : "--")}
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-red-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-slate-500 text-sm font-medium">Expiring/Expired</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center group-hover:from-red-200 group-hover:to-red-300 transition-all duration-300">
+                <div className="w-4 h-4 bg-red-500 rounded-sm"></div>
+              </div>
+            </div>
+            <span className="text-3xl font-bold text-red-600">
+              {dashboardLoading ? (
+                <span className="animate-pulse text-slate-400">...</span>
+              ) : expiredStock !== null ? (
+                expiredStock.toLocaleString()
+              ) : (
+                "--"
+              )}
             </span>
           </div>
+
           {/* Outstanding Payments Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-start">
-            <span className="text-gray-500 dark:text-gray-400 text-sm mb-2">Outstanding Payments</span>
-            <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {dashboardLoading ? <span className="animate-pulse">...</span> : (outstandingPayments !== null ? outstandingPayments : "--")}
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100/50 p-6 hover:shadow-xl transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-slate-500 text-sm font-medium">Outstanding Payments</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center group-hover:from-green-200 group-hover:to-green-300 transition-all duration-300">
+                <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
+              </div>
+            </div>
+            <span className="text-3xl font-bold text-green-600">
+              {dashboardLoading ? (
+                <span className="animate-pulse text-slate-400">...</span>
+              ) : outstandingPayments !== null ? (
+                outstandingPayments
+              ) : (
+                "--"
+              )}
             </span>
           </div>
+
           {/* Sales Orders Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-start col-span-1">
-            <span className="text-gray-500 dark:text-gray-400 text-sm mb-2">Sales Orders</span>
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-emerald-100/50 p-6 hover:shadow-xl transition-all duration-300 col-span-1">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-slate-500 text-sm font-medium">Sales Orders</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl flex items-center justify-center">
+                <div className="w-4 h-4 bg-emerald-500 rounded-sm"></div>
+              </div>
+            </div>
             {salesOrdersLoading ? (
-              <span className="animate-pulse">...</span>
+              <span className="animate-pulse text-slate-400 text-3xl font-bold">...</span>
             ) : salesOrdersError ? (
-              <span className="text-red-600 dark:text-red-400">{salesOrdersError}</span>
+              <span className="text-red-600 text-sm">{salesOrdersError}</span>
             ) : (
-              <>
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{salesOrdersKPIs.total}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">Pending: {salesOrdersKPIs.pending}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">Total Value: ₹{salesOrdersKPIs.totalValue.toLocaleString()}</span>
-              </>
+              <div className="space-y-2">
+                <span className="text-3xl font-bold text-emerald-600">{salesOrdersKPIs.total.toLocaleString()}</span>
+                <div className="space-y-1">
+                  <div className="text-xs text-slate-500">
+                    Pending: <span className="font-medium text-slate-700">{salesOrdersKPIs.pending}</span>
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    Total Value:{" "}
+                    <span className="font-medium text-slate-700">₹{salesOrdersKPIs.totalValue.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
+
           {/* Purchase Orders Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-start col-span-1">
-            <span className="text-gray-500 dark:text-gray-400 text-sm mb-2">Purchase Orders</span>
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 p-6 hover:shadow-xl transition-all duration-300 col-span-1">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-slate-500 text-sm font-medium">Purchase Orders</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center">
+                <div className="w-4 h-4 bg-indigo-500 rounded-sm"></div>
+              </div>
+            </div>
             {purchaseOrdersLoading ? (
-              <span className="animate-pulse">...</span>
+              <span className="animate-pulse text-slate-400 text-3xl font-bold">...</span>
             ) : purchaseOrdersError ? (
-              <span className="text-red-600 dark:text-red-400">{purchaseOrdersError}</span>
+              <span className="text-red-600 text-sm">{purchaseOrdersError}</span>
             ) : (
-              <>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{purchaseOrdersKPIs.total}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">Pending: {purchaseOrdersKPIs.pending}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">Total Value: ₹{purchaseOrdersKPIs.totalValue.toLocaleString()}</span>
-              </>
+              <div className="space-y-2">
+                <span className="text-3xl font-bold text-indigo-600">{purchaseOrdersKPIs.total.toLocaleString()}</span>
+                <div className="space-y-1">
+                  <div className="text-xs text-slate-500">
+                    Pending: <span className="font-medium text-slate-700">{purchaseOrdersKPIs.pending}</span>
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    Total Value:{" "}
+                    <span className="font-medium text-slate-700">
+                      ₹{purchaseOrdersKPIs.totalValue.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>
+
         {/* Recent Inventory Movements Accordion */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-0 mb-8">
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100/50 mb-8 overflow-hidden">
           <button
-            className={`w-full flex justify-between items-center px-6 py-4 focus:outline-none text-xl font-semibold text-gray-900 dark:text-white rounded-t-lg transition-colors duration-200 ${showInventory ? 'bg-green-100 dark:bg-green-900' : 'bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800'}`}
+            className={`w-full flex justify-between items-center px-8 py-6 focus:outline-none text-xl font-semibold transition-all duration-300 ${
+              showInventory
+                ? "bg-gradient-to-r from-green-50 to-blue-50 text-green-700 border-b border-green-100/50"
+                : "text-slate-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 hover:text-blue-700"
+            }`}
             onClick={() => setShowInventory((v) => !v)}
             aria-expanded={showInventory}
             aria-controls="inventory-accordion"
           >
-            <span>Recent Inventory Movements</span>
-            <span className="text-2xl">{showInventory ? "−" : "+"}</span>
+            <span className="flex items-center">
+              <div
+                className={`w-3 h-3 rounded-full mr-4 transition-colors duration-300 ${showInventory ? "bg-green-500" : "bg-slate-300"}`}
+              ></div>
+              Recent Inventory Movements
+            </span>
+            <span className={`text-2xl transition-transform duration-300 ${showInventory ? "rotate-45" : ""}`}>+</span>
           </button>
           {showInventory && (
-            <div id="inventory-accordion" className="px-6 pb-6">
+            <div id="inventory-accordion" className="px-8 pb-8">
               {dashboardLoading ? (
-                <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+                <div className="text-slate-500 py-8 text-center">Loading...</div>
               ) : dashboardError ? (
-                <div className="text-red-600 dark:text-red-400">{dashboardError}</div>
+                <div className="text-red-600 py-8 text-center">{dashboardError}</div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <table className="min-w-full">
                     <thead>
-                      <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Quantity</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Remarks</th>
+                      <tr className="border-b border-slate-200">
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Type</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Product</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Quantity</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Remarks</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-slate-100">
                       {recentMovements.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="px-4 py-2 text-gray-700 dark:text-gray-300 text-center">No recent movements</td>
+                          <td colSpan={5} className="px-4 py-8 text-slate-500 text-center">
+                            No recent movements
+                          </td>
                         </tr>
                       ) : (
                         recentMovements.map((item, idx) => (
-                          <tr key={idx}>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.date || "--"}</td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.transaction_type || "--"}</td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.product_name || item.product || "--"}</td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.quantity || "--"}</td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.remarks || "--"}</td>
+                          <tr key={idx} className="hover:bg-slate-50/50 transition-colors duration-200">
+                            <td className="px-4 py-4 text-slate-700">{item.date || "--"}</td>
+                            <td className="px-4 py-4">
+                              <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                                {item.transaction_type || "--"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 text-slate-700 font-medium">
+                              {item.product_name || item.product || "--"}
+                            </td>
+                            <td className="px-4 py-4 text-slate-700">{item.quantity || "--"}</td>
+                            <td className="px-4 py-4 text-slate-600 text-sm">{item.remarks || "--"}</td>
                           </tr>
                         ))
                       )}
@@ -360,52 +503,68 @@ export default function Home() {
             </div>
           )}
         </div>
+
         {/* Recent Sales Orders Accordion */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-0 mb-8">
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-green-100/50 mb-8 overflow-hidden">
           <button
-            className={`w-full flex justify-between items-center px-6 py-4 focus:outline-none text-xl font-semibold text-gray-900 dark:text-white rounded-t-lg transition-colors duration-200 ${showSales ? 'bg-green-100 dark:bg-green-900' : 'bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800'}`}
+            className={`w-full flex justify-between items-center px-8 py-6 focus:outline-none text-xl font-semibold transition-all duration-300 ${
+              showSales
+                ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border-b border-green-100/50"
+                : "text-slate-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:text-green-700"
+            }`}
             onClick={() => setShowSales((v) => !v)}
             aria-expanded={showSales}
             aria-controls="sales-accordion"
           >
-            <span>Recent Sales Orders</span>
-            <span className="text-2xl">{showSales ? "−" : "+"}</span>
+            <span className="flex items-center">
+              <div
+                className={`w-3 h-3 rounded-full mr-4 transition-colors duration-300 ${showSales ? "bg-green-500" : "bg-slate-300"}`}
+              ></div>
+              Recent Sales Orders
+            </span>
+            <span className={`text-2xl transition-transform duration-300 ${showSales ? "rotate-45" : ""}`}>+</span>
           </button>
           {showSales && (
-            <div id="sales-accordion" className="px-6 pb-6">
+            <div id="sales-accordion" className="px-8 pb-8">
               {salesOrdersLoading ? (
-                <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+                <div className="text-slate-500 py-8 text-center">Loading...</div>
               ) : salesOrdersError ? (
-                <div className="text-red-600 dark:text-red-400">{salesOrdersError}</div>
+                <div className="text-red-600 py-8 text-center">{salesOrdersError}</div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <table className="min-w-full">
                     <thead>
-                      <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                      <tr className="border-b border-slate-200">
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Customer</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Amount</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-slate-100">
                       {salesOrders.length === 0 ? (
                         <tr>
-                          <td colSpan={4} className="px-4 py-2 text-gray-700 dark:text-gray-300 text-center">No recent sales orders</td>
+                          <td colSpan={4} className="px-4 py-8 text-slate-500 text-center">
+                            No recent sales orders
+                          </td>
                         </tr>
                       ) : (
                         salesOrders.map((order, idx) => (
-                          <tr key={idx}>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.order_date || "--"}</td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                          <tr key={idx} className="hover:bg-slate-50/50 transition-colors duration-200">
+                            <td className="px-4 py-4 text-slate-700">{order.order_date || "--"}</td>
+                            <td className="px-4 py-4 text-slate-700 font-medium">
                               {order.customer_name ||
                                 (order.customer && typeof order.customer === "object"
                                   ? order.customer.name
                                   : order.customer) ||
                                 "--"}
                             </td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.status || "--"}</td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">₹{order.total_amount || "--"}</td>
+                            <td className="px-4 py-4">
+                              <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                {order.status || "--"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 text-slate-700 font-semibold">₹{order.total_amount || "--"}</td>
                           </tr>
                         ))
                       )}
@@ -416,52 +575,68 @@ export default function Home() {
             </div>
           )}
         </div>
+
         {/* Recent Purchase Orders Accordion */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-0 mb-8">
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-indigo-100/50 mb-8 overflow-hidden">
           <button
-            className={`w-full flex justify-between items-center px-6 py-4 focus:outline-none text-xl font-semibold text-gray-900 dark:text-white rounded-t-lg transition-colors duration-200 ${showPurchase ? 'bg-green-100 dark:bg-green-900' : 'bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800'}`}
+            className={`w-full flex justify-between items-center px-8 py-6 focus:outline-none text-xl font-semibold transition-all duration-300 ${
+              showPurchase
+                ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-b border-blue-100/50"
+                : "text-slate-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700"
+            }`}
             onClick={() => setShowPurchase((v) => !v)}
             aria-expanded={showPurchase}
             aria-controls="purchase-accordion"
           >
-            <span>Recent Purchase Orders</span>
-            <span className="text-2xl">{showPurchase ? "−" : "+"}</span>
+            <span className="flex items-center">
+              <div
+                className={`w-3 h-3 rounded-full mr-4 transition-colors duration-300 ${showPurchase ? "bg-blue-500" : "bg-slate-300"}`}
+              ></div>
+              Recent Purchase Orders
+            </span>
+            <span className={`text-2xl transition-transform duration-300 ${showPurchase ? "rotate-45" : ""}`}>+</span>
           </button>
           {showPurchase && (
-            <div id="purchase-accordion" className="px-6 pb-6">
+            <div id="purchase-accordion" className="px-8 pb-8">
               {purchaseOrdersLoading ? (
-                <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+                <div className="text-slate-500 py-8 text-center">Loading...</div>
               ) : purchaseOrdersError ? (
-                <div className="text-red-600 dark:text-red-400">{purchaseOrdersError}</div>
+                <div className="text-red-600 py-8 text-center">{purchaseOrdersError}</div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <table className="min-w-full">
                     <thead>
-                      <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                      <tr className="border-b border-slate-200">
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Supplier</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
+                        <th className="px-4 py-4 text-left text-sm font-semibold text-slate-600">Amount</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-slate-100">
                       {purchaseOrders.length === 0 ? (
                         <tr>
-                          <td colSpan={4} className="px-4 py-2 text-gray-700 dark:text-gray-300 text-center">No recent purchase orders</td>
+                          <td colSpan={4} className="px-4 py-8 text-slate-500 text-center">
+                            No recent purchase orders
+                          </td>
                         </tr>
                       ) : (
                         purchaseOrders.map((order, idx) => (
-                          <tr key={idx}>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.order_date || "--"}</td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                          <tr key={idx} className="hover:bg-slate-50/50 transition-colors duration-200">
+                            <td className="px-4 py-4 text-slate-700">{order.order_date || "--"}</td>
+                            <td className="px-4 py-4 text-slate-700 font-medium">
                               {order.manufacturer_name ||
                                 (order.manufacturer && typeof order.manufacturer === "object"
                                   ? order.manufacturer.name
                                   : order.manufacturer) ||
                                 "--"}
                             </td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.status || "--"}</td>
-                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">₹{order.total_amount || "--"}</td>
+                            <td className="px-4 py-4">
+                              <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                                {order.status || "--"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 text-slate-700 font-semibold">₹{order.total_amount || "--"}</td>
                           </tr>
                         ))
                       )}
@@ -473,50 +648,60 @@ export default function Home() {
           )}
         </div>
       </main>
+
       {/* User Profile Modal */}
       {profileOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 w-full max-w-md relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-blue-100/50 p-8 w-full max-w-md relative">
             <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 dark:hover:text-white text-2xl"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-2xl transition-colors duration-200"
               onClick={() => setProfileOpen(false)}
               aria-label="Close profile"
             >
-              &times;
+              ×
             </button>
-            <div className="flex flex-col items-center mb-6">
-              <div className="flex items-center justify-center h-16 w-16 rounded-full bg-blue-600 text-white text-3xl font-bold mb-2">
+            <div className="flex flex-col items-center mb-8">
+              <div className="flex items-center justify-center h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 to-green-500 text-white text-2xl font-bold mb-4 shadow-lg">
                 {getInitials(user.first_name ? user.first_name + " " + (user.last_name || "") : user.username)}
               </div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+              <h2 className="text-2xl font-bold text-slate-800 mb-2">
                 {user.first_name ? user.first_name + " " + (user.last_name || "") : user.username || "User"}
               </h2>
-              <span className="text-gray-500 dark:text-gray-300 text-sm">{user.role || "Role"}</span>
+              <span className="text-slate-500 text-sm px-3 py-1 bg-blue-100 rounded-full">{user.role || "Role"}</span>
             </div>
             {loadingProfile ? (
-              <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+              <div className="text-slate-500 text-center">Loading...</div>
             ) : profileError ? (
-              <div className="text-red-600 dark:text-red-400">{profileError}</div>
+              <div className="text-red-600 text-center">{profileError}</div>
             ) : (
-              <div className="space-y-2">
-                <div><span className="font-semibold text-gray-700 dark:text-gray-200">Email:</span> <span className="text-gray-600 dark:text-gray-300">{user.email || "-"}</span></div>
-                <div><span className="font-semibold text-gray-700 dark:text-gray-200">Department:</span> <span className="text-gray-600 dark:text-gray-300">{user.department || "-"}</span></div>
-                <div><span className="font-semibold text-gray-700 dark:text-gray-200">Role:</span> <span className="text-gray-600 dark:text-gray-300">{user.role || "-"}</span></div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
+                  <span className="font-semibold text-slate-600">Email:</span>
+                  <span className="text-slate-800">{user.email || "-"}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
+                  <span className="font-semibold text-slate-600">Department:</span>
+                  <span className="text-slate-800">{user.department || "-"}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
+                  <span className="font-semibold text-slate-600">Role:</span>
+                  <span className="text-slate-800">{user.role || "-"}</span>
+                </div>
               </div>
             )}
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }
 
 export async function clientLoader() {
   if (typeof window !== "undefined") {
-    const token = localStorage.getItem("access_token");
+    const token = localStorage.getItem("access_token")
     if (!token) {
-      return { redirect: "/login" };
+      return { redirect: "/login" }
     }
   }
-  return null;
+  return null
 }
