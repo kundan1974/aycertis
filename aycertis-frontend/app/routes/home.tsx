@@ -46,6 +46,11 @@ export default function Home() {
   const [purchaseOrdersError, setPurchaseOrdersError] = useState("");
   const [purchaseOrdersKPIs, setPurchaseOrdersKPIs] = useState<{ total: number; pending: number; totalValue: number }>({ total: 0, pending: 0, totalValue: 0 });
 
+  // Accordion states
+  const [showInventory, setShowInventory] = useState(true);
+  const [showSales, setShowSales] = useState(false);
+  const [showPurchase, setShowPurchase] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
@@ -303,131 +308,167 @@ export default function Home() {
             )}
           </div>
         </div>
-        {/* Recent Inventory Movements */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Recent Inventory Movements</h2>
-          {dashboardLoading ? (
-            <div className="text-gray-500 dark:text-gray-400">Loading...</div>
-          ) : dashboardError ? (
-            <div className="text-red-600 dark:text-red-400">{dashboardError}</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Quantity</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentMovements.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="px-4 py-2 text-gray-700 dark:text-gray-300 text-center">No recent movements</td>
-                    </tr>
-                  ) : (
-                    recentMovements.map((item, idx) => (
-                      <tr key={idx}>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.date || "--"}</td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.transaction_type || "--"}</td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.product_name || item.product || "--"}</td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.quantity || "--"}</td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.remarks || "--"}</td>
+        {/* Recent Inventory Movements Accordion */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-0 mb-8">
+          <button
+            className={`w-full flex justify-between items-center px-6 py-4 focus:outline-none text-xl font-semibold text-gray-900 dark:text-white rounded-t-lg transition-colors duration-200 ${showInventory ? 'bg-green-100 dark:bg-green-900' : 'bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800'}`}
+            onClick={() => setShowInventory((v) => !v)}
+            aria-expanded={showInventory}
+            aria-controls="inventory-accordion"
+          >
+            <span>Recent Inventory Movements</span>
+            <span className="text-2xl">{showInventory ? "−" : "+"}</span>
+          </button>
+          {showInventory && (
+            <div id="inventory-accordion" className="px-6 pb-6">
+              {dashboardLoading ? (
+                <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+              ) : dashboardError ? (
+                <div className="text-red-600 dark:text-red-400">{dashboardError}</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Quantity</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Remarks</th>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {recentMovements.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="px-4 py-2 text-gray-700 dark:text-gray-300 text-center">No recent movements</td>
+                        </tr>
+                      ) : (
+                        recentMovements.map((item, idx) => (
+                          <tr key={idx}>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.date || "--"}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.transaction_type || "--"}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.product_name || item.product || "--"}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.quantity || "--"}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{item.remarks || "--"}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </div>
-        {/* Recent Sales Orders */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Recent Sales Orders</h2>
-          {salesOrdersLoading ? (
-            <div className="text-gray-500 dark:text-gray-400">Loading...</div>
-          ) : salesOrdersError ? (
-            <div className="text-red-600 dark:text-red-400">{salesOrdersError}</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {salesOrders.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="px-4 py-2 text-gray-700 dark:text-gray-300 text-center">No recent sales orders</td>
-                    </tr>
-                  ) : (
-                    salesOrders.map((order, idx) => (
-                      <tr key={idx}>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.order_date || "--"}</td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
-                          {order.customer_name ||
-                            (order.customer && typeof order.customer === "object"
-                              ? order.customer.name
-                              : order.customer) ||
-                            "--"}
-                        </td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.status || "--"}</td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">₹{order.total_amount || "--"}</td>
+        {/* Recent Sales Orders Accordion */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-0 mb-8">
+          <button
+            className={`w-full flex justify-between items-center px-6 py-4 focus:outline-none text-xl font-semibold text-gray-900 dark:text-white rounded-t-lg transition-colors duration-200 ${showSales ? 'bg-green-100 dark:bg-green-900' : 'bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800'}`}
+            onClick={() => setShowSales((v) => !v)}
+            aria-expanded={showSales}
+            aria-controls="sales-accordion"
+          >
+            <span>Recent Sales Orders</span>
+            <span className="text-2xl">{showSales ? "−" : "+"}</span>
+          </button>
+          {showSales && (
+            <div id="sales-accordion" className="px-6 pb-6">
+              {salesOrdersLoading ? (
+                <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+              ) : salesOrdersError ? (
+                <div className="text-red-600 dark:text-red-400">{salesOrdersError}</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {salesOrders.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="px-4 py-2 text-gray-700 dark:text-gray-300 text-center">No recent sales orders</td>
+                        </tr>
+                      ) : (
+                        salesOrders.map((order, idx) => (
+                          <tr key={idx}>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.order_date || "--"}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                              {order.customer_name ||
+                                (order.customer && typeof order.customer === "object"
+                                  ? order.customer.name
+                                  : order.customer) ||
+                                "--"}
+                            </td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.status || "--"}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">₹{order.total_amount || "--"}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </div>
-        {/* Recent Purchase Orders */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Recent Purchase Orders</h2>
-          {purchaseOrdersLoading ? (
-            <div className="text-gray-500 dark:text-gray-400">Loading...</div>
-          ) : purchaseOrdersError ? (
-            <div className="text-red-600 dark:text-red-400">{purchaseOrdersError}</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {purchaseOrders.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="px-4 py-2 text-gray-700 dark:text-gray-300 text-center">No recent purchase orders</td>
-                    </tr>
-                  ) : (
-                    purchaseOrders.map((order, idx) => (
-                      <tr key={idx}>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.order_date || "--"}</td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
-                          {order.manufacturer_name ||
-                            (order.manufacturer && typeof order.manufacturer === "object"
-                              ? order.manufacturer.name
-                              : order.manufacturer) ||
-                            "--"}
-                        </td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.status || "--"}</td>
-                        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">₹{order.total_amount || "--"}</td>
+        {/* Recent Purchase Orders Accordion */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-0 mb-8">
+          <button
+            className={`w-full flex justify-between items-center px-6 py-4 focus:outline-none text-xl font-semibold text-gray-900 dark:text-white rounded-t-lg transition-colors duration-200 ${showPurchase ? 'bg-green-100 dark:bg-green-900' : 'bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800'}`}
+            onClick={() => setShowPurchase((v) => !v)}
+            aria-expanded={showPurchase}
+            aria-controls="purchase-accordion"
+          >
+            <span>Recent Purchase Orders</span>
+            <span className="text-2xl">{showPurchase ? "−" : "+"}</span>
+          </button>
+          {showPurchase && (
+            <div id="purchase-accordion" className="px-6 pb-6">
+              {purchaseOrdersLoading ? (
+                <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+              ) : purchaseOrdersError ? (
+                <div className="text-red-600 dark:text-red-400">{purchaseOrdersError}</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Supplier</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {purchaseOrders.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="px-4 py-2 text-gray-700 dark:text-gray-300 text-center">No recent purchase orders</td>
+                        </tr>
+                      ) : (
+                        purchaseOrders.map((order, idx) => (
+                          <tr key={idx}>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.order_date || "--"}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                              {order.manufacturer_name ||
+                                (order.manufacturer && typeof order.manufacturer === "object"
+                                  ? order.manufacturer.name
+                                  : order.manufacturer) ||
+                                "--"}
+                            </td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{order.status || "--"}</td>
+                            <td className="px-4 py-2 text-gray-700 dark:text-gray-300">₹{order.total_amount || "--"}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </div>
