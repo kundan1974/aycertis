@@ -2,9 +2,19 @@
 
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
+import PurchaseOrderFormModal from "../components/PurchaseOrderFormModal"
+import PurchaseOrderViewModal from "../components/PurchaseOrderViewModal"
 
 export function PurchaseOrdersTab() {
   const navigate = useNavigate()
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editOrder, setEditOrder] = useState<any>(null)
+  const [modalLoading, setModalLoading] = useState(false)
+  const [modalError, setModalError] = useState("")
+  const [viewModalOpen, setViewModalOpen] = useState(false)
+  const [viewOrder, setViewOrder] = useState<any>(null)
+
   // Search/filter states
   const [search, setSearch] = useState("")
   const [status, setStatus] = useState("")
@@ -15,7 +25,13 @@ export function PurchaseOrdersTab() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
+  // Fetch orders
   useEffect(() => {
+    fetchOrders()
+    // eslint-disable-next-line
+  }, [navigate])
+
+  function fetchOrders() {
     const token = localStorage.getItem("access_token")
     if (!token) {
       navigate("/login", { replace: true })
@@ -46,7 +62,78 @@ export function PurchaseOrdersTab() {
         setError("Could not load purchase orders")
         setLoading(false)
       })
-  }, [navigate])
+  }
+
+  // Add/Edit handlers
+  function handleAdd() {
+    setEditOrder(null)
+    setModalOpen(true)
+  }
+  function handleEdit(order: any) {
+    setEditOrder(order)
+    setModalOpen(true)
+  }
+  function handleView(order: any) {
+    setViewOrder(order)
+    setViewModalOpen(true)
+  }
+  function handleModalClose() {
+    setModalOpen(false)
+    setEditOrder(null)
+  }
+  function handleViewModalClose() {
+    setViewModalOpen(false)
+    setViewOrder(null)
+  }
+  async function handleModalSubmit(data: any) {
+    setModalLoading(true)
+    setModalError("")
+    const token = localStorage.getItem("access_token")
+    if (!token) {
+      navigate("/login", { replace: true })
+      return
+    }
+    try {
+      let res
+      if (editOrder) {
+        // Update
+        res = await fetch(`/api/inventory/purchase-orders/${editOrder.id}/`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        })
+      } else {
+        // Create
+        res = await fetch("/api/inventory/purchase-orders/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        })
+      }
+      if (res.status === 401) {
+        localStorage.removeItem("access_token")
+        localStorage.removeItem("refresh_token")
+        navigate("/login", { replace: true })
+        return
+      }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.detail || err.message || "Failed to save purchase order")
+      }
+      setModalLoading(false)
+      handleModalClose()
+      fetchOrders()
+    } catch (err: any) {
+      setModalError(err.message || "Could not save purchase order")
+      setModalLoading(false)
+    }
+  }
 
   // Filtered orders
   const filteredOrders = orders.filter((order) => {
@@ -93,6 +180,19 @@ export function PurchaseOrdersTab() {
 
   return (
     <div className="max-w-7xl mx-auto">
+      <PurchaseOrderViewModal
+        open={viewModalOpen}
+        onClose={handleViewModalClose}
+        order={viewOrder}
+      />
+      <PurchaseOrderFormModal
+        open={modalOpen}
+        onClose={handleModalClose}
+        initialData={editOrder}
+        onSubmit={handleModalSubmit}
+        loading={modalLoading}
+        error={modalError}
+      />
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
         <div>
@@ -101,7 +201,10 @@ export function PurchaseOrdersTab() {
           </h1>
           <p className="text-slate-600 mt-2">View, create, and manage purchase orders placed to manufacturers</p>
         </div>
-        <button className="px-8 py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl shadow-lg hover:from-blue-600 hover:to-green-600 hover:shadow-xl transition-all duration-300 font-semibold flex items-center gap-2">
+        <button
+          className="px-8 py-3 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-xl shadow-lg hover:from-blue-600 hover:to-green-600 hover:shadow-xl transition-all duration-300 font-semibold flex items-center gap-2"
+          onClick={handleAdd}
+        >
           <span className="text-lg">+</span>
           Add Purchase Order
         </button>
@@ -320,10 +423,16 @@ export function PurchaseOrdersTab() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
-                        <button className="px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 rounded-md hover:from-blue-200 hover:to-blue-300 transition-all duration-300 text-xs font-semibold shadow-sm hover:shadow-md">
+                        <button
+                          className="px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 rounded-md hover:from-blue-200 hover:to-blue-300 transition-all duration-300 text-xs font-semibold shadow-sm hover:shadow-md"
+                          onClick={() => handleView(order)}
+                        >
                           View
                         </button>
-                        <button className="px-3 py-1 bg-gradient-to-r from-green-100 to-green-200 text-green-700 rounded-md hover:from-green-200 hover:to-green-300 transition-all duration-300 text-xs font-semibold shadow-sm hover:shadow-md">
+                        <button
+                          className="px-3 py-1 bg-gradient-to-r from-green-100 to-green-200 text-green-700 rounded-md hover:from-green-200 hover:to-green-300 transition-all duration-300 text-xs font-semibold shadow-sm hover:shadow-md"
+                          onClick={() => handleEdit(order)}
+                        >
                           Edit
                         </button>
                         <button className="px-3 py-1 bg-gradient-to-r from-red-100 to-red-200 text-red-700 rounded-md hover:from-red-200 hover:to-red-300 transition-all duration-300 text-xs font-semibold shadow-sm hover:shadow-md">
