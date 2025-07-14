@@ -35,10 +35,11 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
     items = PurchaseOrderItemSerializer(many=True, read_only=True)
     manufacturer = ManufacturerSerializer(read_only=True)
     manufacturer_id = serializers.PrimaryKeyRelatedField(queryset=Manufacturer.objects.all(), source='manufacturer', write_only=True)
+    manufacturer_name = serializers.CharField(source='manufacturer.name', read_only=True)
 
     class Meta:
         model = PurchaseOrder
-        fields = ['id', 'manufacturer', 'manufacturer_id', 'order_date', 'total_amount', 'status', 'payment_due_date', 'payment_status', 'remarks', 'created_by', 'created_at', 'updated_at', 'items']
+        fields = ['id', 'manufacturer', 'manufacturer_id', 'manufacturer_name', 'order_date', 'total_amount', 'status', 'payment_due_date', 'payment_status', 'remarks', 'created_by', 'created_at', 'updated_at', 'items']
 
 class BatchSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
